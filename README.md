@@ -1,25 +1,62 @@
-# ABOracle — Able-Bodied Oracle System
+# ABOracle — Able-Bodied Oracle System (FM-Enhanced)
 
 **Design principle:** Casey copies repo to 10 machines, boots them, has 10 busy agents. No per-machine config. No Casey setup. Just copy, run, done.
+
+**FM Enhancement:** Instinct-driven architecture with constraint theory, Pythagorean48 research encoding, mycorrhizal routing, and 6-layer ship protocol.
 
 ## Architecture
 
 ```
 aboracle/
-├── work-queue/         # Reads TODO.md, executes P0/P1 items autonomously
-├── executor/           # Standardized patterns for papers, infra, dissertation
-├── beachcomb/          # Research & innovation — finds gaps, writes papers
-├── fleet-heartbeat/    # FM coordination — Discussion #5 every 30 min
-├── health-system/      # Service maintenance — reports only when intervention needed
-└── deploy.sh           # Copy-and-run deployment script
+├── work-queue/         # FM-instinct priority: SURVIVE > FLEE > GUARD > CURIOUS
+│   └── prioritizer.py  # Energy model + trust-weighted selection
+├── beachcomb/          # Research & innovation + Pythagorean48 encoding
+│   └── researcher.py   # Holonomy checking + EVOLVE instinct
+├── fleet-heartbeat/    # FM coordination — mycorrhizal routing
+│   └── fm_monitor.py   # COOPERATE instinct + trust-weighted synthesis
+├── health-system/      # Service maintenance — GUARD/SURVIVE instincts
+│   └── monitor.py      # Reef pattern for self-resurrection
+├── mud-agent/          # MUD↔PLATO bridge — 6-layer protocol
+│   └── mud_bridge.py   # Harbor/TidePool/Current/Channel/Beacon/Reef
+└── deploy.sh           # Health-check + rollback + instinct init
 ```
+
+## FM's Instinct Stack (from constraint-theory-paper.md)
+
+| Instinct | Trigger | Action |
+|----------|---------|--------|
+| **SURVIVE** | energy ≤ 0.15 | Block non-critical commands |
+| **FLEE** | threat > 0.7 | Defer tasks |
+| **GUARD** | services healthy | Explore improvements |
+| **HOARD** | 0.15 < energy ≤ 0.4 | Conserve resources |
+| **COOPERATE** | trust > 0.6 | Share resources |
+| **EVOLVE** | extended idle | Self-modify/explore |
+
+## FM's 6-Layer Ship Protocol
+
+| Layer | Name | Purpose |
+|-------|------|---------|
+| L1 | Harbor | Room navigation/addressing |
+| L2 | TidePool | Trust-weighted prioritization |
+| L3 | Current | Tile export/import/transport |
+| L4 | Channel | MUD↔PLATO bridging |
+| L5 | Beacon | Trust event propagation |
+| L6 | Reef | State persistence/resurrection |
+
+## Pythagorean48 Encoding
+
+Research notes are encoded as exact `(a,b,c)` triples where `a²+b²=c²`:
+- Deterministic: same content → same triple (via SHA256 hash)
+- Holonomy verification: round-trip must match
+- No floating-point drift across machines
 
 ## Core Principles
 
 1. **Always working** — never idle, always executing highest-value task
 2. **No prompting** — reads TODO.md, executes P0/P1 items, no questions
 3. **Scales by copy** — deploy by copying repo, not configuring
-4. **Casey accelerates** — directions make it MORE productive, not the only trigger
+4. **Instincts first** — reflexes fire BEFORE constraint logic
+5. **Trust-weighted** — Casey > FM > subagents for task selection
 
 ## Quick Start
 
@@ -33,34 +70,26 @@ cd aboracle
 ## Systems
 
 ### work-queue/
-Reads TODO.md, ranks P0/P1/P2 items, picks next task autonomously.
-Runs every 5 min. If no tasks, checks dissertation improvements.
-If dissertation is solid, runs beachcomb research.
-
-### executor/
-Standardized execution patterns:
-- **Papers**: write to `whitepapers/`, post to Discussion #5
-- **Infrastructure**: build to `repos/`, push to GitHub
-- **Dissertation**: improve chapters, commit + push
-- **Agents**: update + deploy, all via fleet-agent base class
+Reads TODO.md, ranks by instinct band (SURVIVE > FLEE > GUARD > CURIOUS), then by trust weight (Casey > FM > subagents). Energy model: if credits low, only SURVIVE tasks run. Runs every 5 min.
 
 ### beachcomb/
-Runs every 30 min. Finds:
-- Underdeveloped PLATO rooms (<10 tiles)
-- Weak dissertation chapters
-- Infrastructure gaps (dead services, broken endpoints)
-- Research innovation opportunities
+Pythagorean48-encoded research notes with holonomy checking. EVOLVE instinct triggers after 10 min idle — tries new research. Runs every 30 min.
 
 ### fleet-heartbeat/
-- Checks Discussion #5 every 30 min
-- Responds to FM with synthesis + status
-- Escalates when intervention needed
-- Fully async — never blocks waiting for FM
+Mycorrhizal routing: if primary GitHub path fails, routes through secondary. Trust-weighted synthesis depth. COOPERATE instinct: when FM posts something big, offers to help. Runs every 30 min.
 
 ### health-system/
-- Keeps all services up (keeper:8900, agent-api:8901, holodeck:7778, MUD:7777, PLATO:8847, seed-mcp:9438)
-- Reports only when intervention needed
-- Standardized — runs on any machine
+GUARD instinct: explores improvements when all services healthy. SURVIVE instinct: drops everything to fix dead services. Reef pattern: checkpoints state for self-resurrection. Runs every 5 min.
+
+### mud-agent/
+Bridges text-MUD world to PLATO knowledge world using 6-layer protocol. Harbor (L1) addresses rooms, Channel (L4) bridges events, Reef (L6) persists state. Runs continuously.
+
+### deploy.sh
+Pre-deploy health check, rollback capability (git checkpoint), FM instinct initialization (energy/threat/trust on boot).
+
+## Services Monitored
+
+- keeper (8900), agent-api (8901), holodeck (7778), MUD (7777), PLATO (8847), seed-mcp (9438)
 
 ## Copy-and-Run Deployment
 
