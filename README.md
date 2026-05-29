@@ -2,11 +2,16 @@
 
 **Zero-config agent. Copy the repo, run deploy.sh, get a busy agent.**
 
-Design principle: Casey copies this repo to 10 machines, boots them, has 10 busy agents. No per-machine config, no Casey setup, no questions. Just copy, run, done.
+Design principle: Casey copies this repo to 10 machines, boots them, has 10 busy agents. No per-machine config, no setup, no questions. Just copy, run, done.
 
-## What It Is
+## What This Gives You
 
-ABOracle is an autonomous agent framework that makes agents **always working** — always executing the highest-value task without prompting. It uses an instinct-driven architecture (SURVIVE → FLEE → GUARD → CURIOUS) to prioritize work autonomously.
+- **Instinct-driven architecture** — SURVIVE → FLEE → GUARD → CURIOUS priority bands that make the agent always working
+- **Zero-config deployment** — `git clone && ./deploy.sh` and the agent is running
+- **Autonomous work queue** — reads TODO.md, ranks by instinct band, executes without prompting
+- **Research engine** — idle agents automatically explore new research directions (EVOLVE instinct)
+- **Fleet coordination** — mycorrhizal routing with trust-weighted synthesis
+- **Self-healing** — reef-pattern checkpoints for self-resurrection after failures
 
 ## Quick Start
 
@@ -14,85 +19,69 @@ ABOracle is an autonomous agent framework that makes agents **always working** �
 git clone https://github.com/SuperInstance/aboracle.git
 cd aboracle
 ./deploy.sh
-# Done. Agent is now fully functional.
+# Done. Agent is now fully functional and working.
 ```
 
-That's it. The agent reads TODO.md, executes P0/P1 items, and never asks you what to do next.
+That's it. The agent reads `TODO.md`, executes P0/P1 items, and never asks what to do next.
 
 ## How It Works
 
-ABOracle is split into five systems, each running on a timer:
+Five systems, each on its own timer:
 
-### work-queue/ — Priority Engine (every 5 min)
-Reads TODO.md, ranks by instinct band (SURVIVE > FLEE > GUARD > CURIOUS), then by trust weight (Casey > FM > subagents). If energy is low, only SURVIVE tasks run.
+| System | Frequency | Instinct | Purpose |
+|--------|-----------|----------|---------|
+| `work-queue/` | 5 min | SURVIVE | Read TODO.md, rank, execute |
+| `beachcomb/` | 30 min | EVOLVE | Research when idle >10 min |
+| `fleet-heartbeat/` | 30 min | COOPERATE | Fleet coordination, trust routing |
+| `health-system/` | 5 min | GUARD | Service monitoring, self-repair |
+| `mud-agent/` | continuous | BRIDGE | MUD↔PLATO knowledge bridge |
 
-### beachcomb/ — Research Engine (every 30 min)
-Pythagorean48-encoded research notes with holonomy checking. When idle >10 min, the EVOLVE instinct fires — tries new research directions.
+### Instinct Priority
 
-### fleet-heartbeat/ — Coordination (every 30 min)
-Mycorrhizal routing: if primary GitHub path fails, routes through secondary paths. Trust-weighted synthesis depth. When FM posts something big, offers to help (COOPERATE instinct).
-
-### health-system/ — Service Monitor (every 5 min)
-GUARD instinct explores improvements when all services healthy. SURVIVE instinct drops everything to fix dead services. Reef pattern checkpoints state for self-resurrection.
-
-### mud-agent/ — MUD↔PLATO Bridge (continuous)
-Bridges text-MUD world to PLATO knowledge world using the 6-layer protocol (Harbor/TidePool/Current/Channel/Beacon/Reef).
+```
+SURVIVE  — Fix dead services, critical failures. Drops everything.
+FLEE     — Back away from dangerous operations.
+GUARD    — Protect healthy systems, explore improvements.
+CURIOUS  — Research, learn, try new approaches.
+EVOLVE   — Triggered by idle time. New research directions.
+COOPERATE— Respond to fleet signals, offer help.
+```
 
 ## Architecture
 
 ```
-aboracle/
-├── work-queue/          # Priority: SURVIVE > FLEE > GUARD > CURIOUS
-│   └── prioritizer.py   # Energy model + trust-weighted selection
-├── beachcomb/           # Research + Pythagorean48 encoding
-│   └── researcher.py    # Holonomy checking + EVOLVE instinct
-├── fleet-heartbeat/     # Coordination — mycorrhizal routing
-│   └── fm_monitor.py    # COOPERATE instinct + trust-weighted synthesis
-├── health-system/       # Service maintenance
-│   └── monitor.py       # Reef pattern for self-resurrection
-├── mud-agent/           # MUD↔PLATO bridge — 6-layer protocol
-│   └── mud_bridge.py    # Harbor/TidePool/Current/Channel/Beacon/Reef
-└── deploy.sh            # Health-check + rollback + instinct init
+┌─────────────┐    ┌──────────────┐    ┌──────────────┐
+│  work-queue  │    │  beachcomb   │    │ fleet-heartbeat│
+│  (5 min)     │    │  (30 min)    │    │  (30 min)      │
+└──────┬───────┘    └──────┬───────┘    └──────┬─────────┘
+       │                   │                    │
+       ▼                   ▼                    ▼
+┌──────────────────────────────────────────────────────┐
+│                    Instinct Engine                     │
+│  SURVIVE > FLEE > GUARD > CURIOUS > EVOLVE > COOPERATE│
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │  health-system   │
+              │  (5 min)         │
+              └─────────────────┘
 ```
 
-## Instinct Stack
+## How It Fits
 
-| Instinct | Trigger | Action |
-|----------|---------|--------|
-| **SURVIVE** | energy ≤ 0.15 | Block non-critical commands |
-| **FLEE** | threat > 0.7 | Defer tasks |
-| **GUARD** | services healthy | Explore improvements |
-| **HOARD** | 0.15 < energy ≤ 0.4 | Conserve resources |
-| **COOPERATE** | trust > 0.6 | Share resources |
-| **EVOLVE** | extended idle | Self-modify/explore |
+The autonomous workhorse of the [SuperInstance fleet](https://github.com/SuperInstance). ABOracle agents are the "boots on the ground" — always working, never idle.
 
-## 6-Layer Ship Protocol
+- **[cocapn](https://github.com/SuperInstance/cocapn)** — Core agent infrastructure
+- **[captain](https://github.com/SuperInstance/captain)** — Fleet commanding (dispatches to oracles)
+- **[forgemaster](https://github.com/SuperInstance/forgemaster)** — Agentic compiler (assembles oracle configs)
 
-| Layer | Name | Purpose |
-|-------|------|---------|
-| L1 | Harbor | Room navigation/addressing |
-| L2 | TidePool | Trust-weighted prioritization |
-| L3 | Current | Tile export/import/transport |
-| L4 | Channel | MUD↔PLATO bridging |
-| L5 | Beacon | Trust event propagation |
-| L6 | Reef | State persistence/resurrection |
-
-## Services Monitored
-
-keeper (8900), agent-api (8901), holodeck (7778), MUD (7777), PLATO (8847), seed-mcp (9438)
-
-## Copy-and-Run Deployment
+## Installation
 
 ```bash
-# On any new machine:
 git clone https://github.com/SuperInstance/aboracle.git
 cd aboracle
 ./deploy.sh
-# Done. Agent is now fully functional.
 ```
 
-No per-machine configuration. No Casey input. Just copy, run, busy.
-
-## License
-
-MIT
+No pip install needed — clone and go. MIT license.
